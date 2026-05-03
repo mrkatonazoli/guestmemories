@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="hu" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GuestMemories — Layout Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    /* ─── Tokens ─── */
+    :root {
+      --gm-bg:             #f0f4ff;
+      --gm-bg-grad:        linear-gradient(160deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
+      --gm-surface:        #ffffff;
+      --gm-surface-raised: #ffffff;
+      --gm-border:         #e2e8f0;
+      --gm-border-strong:  #cbd5e1;
+      --gm-text:           #0f172a;
+      --gm-text-secondary: #475569;
+      --gm-text-muted:     #94a3b8;
+      --gm-primary:        #2563eb;
+      --gm-primary-subtle: #eff6ff;
+      --gm-success:        #16a34a;
+      --gm-danger:         #dc2626;
+      --gm-warning:        #d97706;
+      --gm-rating:         #f59e0b;
+
+      --gm-grad-primary:   linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+      --gm-grad-teal:      linear-gradient(135deg, #06b6d4 0%, #2dd4bf 100%);
+      --gm-grad-orange:    linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+      --gm-grad-green:     linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --gm-grad-purple:    linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+      --gm-grad-pink:      linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+      --gm-grad-hero:      linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+      --gm-tint-blue:      rgba(59,130,246,0.06);
+      --gm-tint-teal:      rgba(6,182,212,0.06);
+      --gm-tint-orange:    rgba(249,115,22,0.06);
+      --gm-tint-green:     rgba(16,185,129,0.06);
+      --gm-tint-purple:    rgba(139,92,246,0.06);
+      --gm-tint-pink:      rgba(236,72,153,0.06);
+
+      --gm-seg-family:     #8b5cf6;
+      --gm-seg-couple:     #ec4899;
+      --gm-seg-solo:       #f59e0b;
+      --gm-seg-business:   #3b82f6;
+      --gm-seg-friends:    #10b981;
+
+      --gm-radius-sm: 6px;
+      --gm-radius-md: 10px;
+      --gm-radius-lg: 14px;
+      --gm-radius-xl: 18px;
+      --gm-radius-full: 9999px;
+
+      --gm-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --gm-shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --gm-shadow-lg: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+      --gm-shadow-xl: 0 24px 64px rgba(0,0,0,0.14);
+
+      --gm-font: 'Inter', system-ui, -apple-system, sans-serif;
+      --gm-ease: cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* ─── Reset ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--gm-font); font-size: 14px; color: var(--gm-text); background: var(--gm-bg-grad); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ─── Page switcher ─── */
+    .page { display: none; }
+    .page.active { display: flex; }
+    .switcher { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 999; }
+    .switcher button {
+      padding: 8px 16px; border-radius: var(--gm-radius-full);
+      background: var(--gm-surface); border: 1px solid var(--gm-border);
+      font-size: 13px; font-weight: 500; color: var(--gm-text-secondary);
+      box-shadow: var(--gm-shadow-md); transition: all 150ms;
+    }
+    .switcher button.active { background: var(--gm-grad-primary); color: white; border-color: transparent; }
+    .switcher button:hover:not(.active) { border-color: var(--gm-border-strong); color: var(--gm-text); }
+
+    /* ═══════════════════════════════════════
+       LOGIN PAGE
+    ═══════════════════════════════════════ */
+    .login-page {
+      min-height: 100vh; width: 100%;
+      background: var(--gm-grad-hero);
+      justify-content: center; align-items: center;
+      flex-direction: column; gap: 32px;
+      padding: 24px;
+    }
+    .login-logo {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .login-logo-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+    }
+    .login-logo span {
+      font-size: 24px; font-weight: 700; color: white; letter-spacing: -0.02em;
+    }
+    .login-logo small {
+      display: block; font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.7);
+    }
+    .login-card {
+      width: 100%; max-width: 420px;
+      background: var(--gm-surface);
+      border-radius: var(--gm-radius-xl);
+      box-shadow: var(--gm-shadow-xl);
+      padding: 40px;
+    }
+    .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .login-card p { font-size: 14px; color: var(--gm-text-secondary); margin-bottom: 28px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: 500; color: var(--gm-text-secondary); }
+    .form-group input {
+      height: 42px; padding: 0 14px;
+      border: 1.5px solid var(--gm-border); border-radius: var(--gm-radius-md);
+      font-size: 14px; font-family: inherit; color: var(--gm-text);
+      transition: border-color 100ms, box-shadow 100ms; outline: none;
+    }
+    .form-group input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .form-group input::placeholder { color: var(--gm-text-muted); }
+    .btn-primary {
+      width: 100%; height: 44px; border-radius: var(--gm-radius-md);
+      background: var(--gm-grad-primary); color: white;
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+      transition: opacity 150ms, transform 100ms; margin-top: 8px;
+    }
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .login-footer { text-align: center; margin-top: 20px; }
+    .login-footer a { font-size: 13px; color: #3b82f6; font-weight: 500; }
+
+    /* ═══════════════════════════════════════
+       DASHBOARD LAYOUT
+    ═══════════════════════════════════════ */
+    .dashboard-page { min-height: 100vh; width: 100%; align-items: stretch; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; min-height: 100vh; flex-shrink: 0;
+      background: var(--gm-surface);
+      border-right: 1px solid var(--gm-border);
+      display: flex; flex-direction: column;
+      padding: 20px 0;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 20px 20px; border-bottom: 1px solid var(--gm-border);
+      margin-bottom: 16px;
+    }
+    .sidebar-logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--gm-grad-primary);
+      display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;
+    }
+    .sidebar-logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+    .sidebar-logo-text small { display: block; font-size: 11px; font-weight: 400; color: var(--gm-text-muted); }
+
+    .hotel-selector {
+      margin: 0 12px 16px; padding: 10px 12px;
+      background: var(--gm-tint-blue); border: 1px solid rgba(59,130,246,0.12);
+      border-radius: var(--gm-radius-md); cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      transition: background 150ms;
+    }
+    .hotel-selector:hover { background: rgba(59,130,246,0.1); }
+    .hotel-selector-avatar {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--gm-grad-teal); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700;
+    }
+    .hotel-selector-name { font-size: 13px; font-weight: 600; flex: 1; }
+    .hotel-selector-chevron { color: var(--gm-text-muted); }
+
+    .nav-section { padding: 0 12px; margin-bottom: 8px; }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--gm-text-muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 8px; margin-bottom: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: var(--gm-radius-md);
+      font-size: 14px; font-weight: 500; color: var(--gm-text-secondary);
+      cursor: pointer; transition: all 100ms; position: relative;
+    }
+    .nav-item:hover { background: var(--gm-tint-blue); color: var(--gm-text); }
+    .nav-item.active {
+      background: var(--gm-primary-subtle); color: #2563eb; font-weight: 600;
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+      width: 3px; border-radius: 0 2px 2px 0; background: #2563eb;
+    }
+    .nav-item i { width: 18px; height: 18px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: #3b82f6; color: white;
+      font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: var(--gm-radius-full);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto; padding: 16px 12px 0;
+      border-top: 1px solid var(--gm-border);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px; border-radius: var(--gm-radius-md);
+      cursor: pointer; transition: background 150ms;
+    }
+    .user-row:hover { background: var(--gm-tint-blue); }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: var(--gm-radius-full);
+      background: var(--gm-grad-purple); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 13px; font-weight: 700;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-email { font-size: 11px; color: var(--gm-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Main content */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .topbar {
+      height: 60px; background: var(--gm-surface);
+      border-bottom: 1px solid var(--gm-border);
+      display: flex; align-items: center; padding: 0 28px; gap: 16px;
+      flex-shrink: 0;
+    }
+    .topbar-title { font-size: 17px; font-weight: 700; flex: 1; letter-spacing: -0.01em; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-secondary {
+      height: 36px; padding: 0 14px; border-radius: var(--gm-radius-md);
+      border: 1.5px solid var(--gm-border); font-size: 13px; font-weight: 500;
+      color: var(--gm-text-secondary); font-family: inherit;
+      display: flex; align-items: center; gap: 6px; transition: all 100ms;
+    }
+    .btn-secondary:hover { border-color: var(--gm-border-strong); color: var(--gm-text); background: var(--gm-tint-blue); }
+    .btn-icon {
+      width: 36px; height: 36px; border-radius: var(--gm-radius-md);
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--gm-border); color: var(--gm-text-secondary); transition: all 100ms;
+    }
+    .btn-icon:hover { border-color: var(--gm-border-strong); color: var(--gm-text); background: var(--gm-tint-blue); }
+
+    .content { padding: 28px; flex: 1; display: flex; flex-direction: column; gap: 28px; overflow-y: auto; }
+
+    /* Welcome */
+    .welcome { display: flex; flex-direction: column; gap: 2px; }
+    .welcome h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .welcome p { font-size: 14px; color: var(--gm-text-secondary); }
+
+    /* KPI row */
+    .kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .kpi-card {
+      background: var(--gm-surface); border-radius: var(--gm-radius-lg);
+      border: 1px solid var(--gm-border); padding: 20px;
+      box-shadow: var(--gm-shadow-sm); display: flex; flex-direction: column; gap: 12px;
+    }
+    .kpi-header { display: flex; align-items: center; justify-content: space-between; }
+    .kpi-label { font-size: 13px; font-weight: 500; color: var(--gm-text-secondary); }
+    .kpi-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; color: white;
+    }
+    .kpi-value { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+    .kpi-trend { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+    .kpi-trend.up { color: var(--gm-success); }
+    .kpi-trend.down { color: var(--gm-danger); }
+    .kpi-trend span { color: var(--gm-text-muted); font-weight: 400; }
+
+    /* Section title */
+    .section-header { display: flex; align-items: center; justify-content: space-between; }
+    .section-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+    .section-link { font-size: 13px; font-weight: 500; color: #3b82f6; }
+
+    /* Platform grid */
+    .platform-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .platform-card {
+      border-radius: var(--gm-radius-lg); overflow: hidden;
+      box-shadow: var(--gm-shadow-sm); border: 1px solid transparent;
+    }
+    .platform-card-header {
+      padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+      color: white;
+    }
+    .platform-icon-box {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;
+    }
+    .platform-card-title { font-size: 14px; font-weight: 700; }
+    .platform-card-subtitle { font-size: 12px; opacity: 0.8; }
+    .platform-card-body {
+      padding: 16px 18px; background: var(--gm-surface); display: flex; flex-direction: column; gap: 10px;
+    }
+    .platform-score-row { display: flex; align-items: baseline; gap: 6px; }
+    .platform-score { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+    .platform-score-max { font-size: 13px; color: var(--gm-text-muted); font-weight: 400; }
+    .stars { display: flex; gap: 2px; color: var(--gm-rating); }
+    .platform-meta { font-size: 12px; color: var(--gm-text-muted); display: flex; align-items: center; gap: 4px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gm-success); }
+    .status-dot.error { background: var(--gm-danger); }
+    .status-dot.pending { background: var(--gm-warning); }
+
+    /* Hotel cards */
+    .hotel-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .hotel-card {
+      background: var(--gm-tint-blue); border: 1px solid rgba(59,130,246,0.12);
+      border-radius: var(--gm-radius-lg); padding: 18px;
+      cursor: pointer; transition: all 150ms; box-shadow: var(--gm-shadow-sm);
+    }
+    .hotel-card:hover { transform: translateY(-2px); box-shadow: var(--gm-shadow-md); border-color: rgba(59,130,246,0.25); }
+    .hotel-card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .hotel-avatar {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 16px; font-weight: 700;
+    }
+    .hotel-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; letter-spacing: -0.01em; }
+    .hotel-location { font-size: 12px; color: var(--gm-text-muted); display: flex; align-items: center; gap: 4px; }
+    .hotel-divider { height: 1px; background: rgba(59,130,246,0.12); margin-bottom: 12px; }
+    .hotel-scores { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .hotel-score-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .hotel-score-logo { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: white; }
+    .hotel-score-val { font-size: 14px; font-weight: 700; }
+    .hotel-score-trend { font-size: 10px; color: var(--gm-success); font-weight: 500; }
+
+    /* Reviews */
+    .reviews-list { display: flex; flex-direction: column; gap: 10px; }
+    .review-row {
+      background: var(--gm-surface); border: 1px solid var(--gm-border);
+      border-radius: var(--gm-radius-md); padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: box-shadow 100ms;
+    }
+    .review-row:hover { box-shadow: var(--gm-shadow-sm); }
+    .review-platform-badge {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 800;
+    }
+    .review-stars { display: flex; gap: 1px; color: var(--gm-rating); margin-bottom: 4px; }
+    .review-text { font-size: 14px; line-height: 1.5; color: var(--gm-text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .review-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+    .review-date { font-size: 12px; color: var(--gm-text-muted); margin-left: auto; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: var(--gm-radius-full);
+      font-size: 12px; font-weight: 500;
+    }
+    .chip-family  { background: rgba(139,92,246,0.1);  color: #7c3aed; border: 1px solid rgba(139,92,246,0.2); }
+    .chip-couple  { background: rgba(236,72,153,0.1);  color: #be185d; border: 1px solid rgba(236,72,153,0.2); }
+    .chip-solo    { background: rgba(245,158,11,0.1);  color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
+    .chip-business{ background: rgba(59,130,246,0.1);  color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
+    .chip-positive{ background: rgba(22,163,74,0.08);  color: #15803d; border: 1px solid rgba(22,163,74,0.15); }
+    .chip-neutral { background: rgba(148,163,184,0.1); color: #475569; border: 1px solid rgba(148,163,184,0.2); }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Page Switcher ─── -->
+  <div class="switcher">
+    <button class="active" onclick="showPage('login')">Login</button>
+    <button onclick="showPage('dashboard')">Dashboard</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       LOGIN PAGE
+  ═══════════════════════════════════════ -->
+  <div class="page login-page active" id="page-login">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <i data-lucide="star" style="width:24px;height:24px;"></i>
+      </div>
+      <div>
+        <span>GuestMemories</span>
+        <small>Hotel Review Platform</small>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <h1>Üdvözlünk vissza</h1>
+      <p>Jelentkezz be a GuestMemories fiókodba</p>
+
+      <div class="form-group">
+        <label for="email">Email cím</label>
+        <input type="email" id="email" placeholder="pl. admin@hotelgellert.hu" />
+      </div>
+      <div class="form-group">
+        <label for="password">Jelszó</label>
+        <input type="password" id="password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn-primary" onclick="showPage('dashboard')">Bejelentkezés</button>
+
+      <div class="login-footer">
+        <a href="#">Elfelejtett jelszó?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       DASHBOARD PAGE
+  ═══════════════════════════════════════ -->
+  <div class="page dashboard-page" id="page-dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <i data-lucide="star" style="width:18px;height:18px;"></i>
+        </div>
+        <div class="sidebar-logo-text">
+          GuestMemories
+          <small>Hotel Platform</small>
+        </div>
+      </div>
+
+      <div style="padding: 0 12px 12px;">
+        <div class="hotel-selector">
+          <div class="hotel-selector-avatar">HG</div>
+          <div class="hotel-selector-name">Hotel Gellért</div>
+          <i data-lucide="chevrons-up-down" style="width:14px;height:14px;" class="hotel-selector-chevron"></i>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <ul style="display:flex;flex-direction:column;gap:2px;">
+          <li class="nav-item active">
+            <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i>
+            Áttekintés
+          </li>
+          <li class="nav-item">
+            <i data-lucide="building-2" style="width:18px;height:18px;"></i>
+            Szállodák
+          </li>
+          <li class="nav-item">
+            <i data-lucide="message-square" style="width:18px;height:18px;"></i>
+            Vélemények
+            <span class="nav-badge">142</span>
+          </li>
+          <li class="nav-item">
+            <i data-lucide="layout-template" style="width:18px;height:18px;"></i>
+            Widgetek
+          </li>
+          <li class="nav-item">
+            <i data-lucide="bar-chart-3" style="width:18px;height:18px;"></i>
+            Statisztikák
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section" style="margin-top:8px;">
+        <p class="nav-label">Platform</p>
+        <ul style="display:flex;flex-direction:column;gap:2px;">
+          <li class="nav-item">
+            <i data-lucide="plug" style="width:18px;height:18px;"></i>
+            Integrációk
+          </li>
+          <li class="nav-item">
+            <i data-lucide="settings" style="width:18px;height:18px;"></i>
+            Beállítások
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="user-row">
+          <div class="user-avatar">ZK</div>
+          <div class="user-info">
+            <div class="user-name">Katonazoltán</div>
+            <div class="user-email">zoltan@guestmemories.io</div>
+          </div>
+          <i data-lucide="log-out" style="width:15px;height:15px;color:var(--gm-text-muted);"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title">Áttekintés</div>
+        <div class="topbar-actions">
+          <button class="btn-secondary">
+            <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i>
+            Szinkronizálás
+          </button>
+          <button class="btn-icon">
+            <i data-lucide="bell" style="width:16px;height:16px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- Welcome -->
+        <div class="welcome">
+          <h2>Jó napot, Zoltán! 👋</h2>
+          <p>Hotel Gellért · utolsó frissítés: 4 perce</p>
+        </div>
+
+        <!-- KPI row -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Összes review (30 nap)</span>
+              <div class="kpi-icon" style="background: var(--gm-grad-primary);">
+                <i data-lucide="message-square" style="width:16px;height:16px;"></i>
+              </div>
+            </div>
+            <div class="kpi-value">142</div>
+            <div class="kpi-trend up">
+              <i data-lucide="trending-up" style="width:13px;height:13px;"></i>
+              +23% <span>előző hónaphoz</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Átlag értékelés</span>
+              <div class="kpi-icon" style="background: var(--gm-grad-teal);">
+                <i data-lucide="star" style="width:16px;height:16px;"></i>
+              </div>
+            </div>
+            <div class="kpi-value">4.7</div>
+            <div class="kpi-trend up">
+              <i data-lucide="trending-up" style="width:13px;height:13px;"></i>
+              +0.2 <span>előző hónaphoz</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Legjobb szegmens</span>
+              <div class="kpi-icon" style="background: var(--gm-grad-purple);">
+                <i data-lucide="users" style="width:16px;height:16px;"></i>
+              </div>
+            </div>
+            <div class="kpi-value" style="font-size:20px;padding-top:4px;">Páros</div>
+            <div class="kpi-trend up" style="color:#8b5cf6;">
+              <i data-lucide="heart" style="width:13px;height:13px;"></i>
+              4.9 átlag <span>ebben a szegmensben</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Pozitív arány</span>
+              <div class="kpi-icon" style="background: var(--gm-grad-green);">
+                <i data-lucide="thumbs-up" style="width:16px;height:16px;"></i>
+              </div>
+            </div>
+            <div class="kpi-value">91%</div>
+            <div class="kpi-trend down">
+              <i data-lucide="trending-down" style="width:13px;height:13px;"></i>
+              −2% <span>előző hónaphoz</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platforms -->
+        <div>
+          <div class="section-header" style="margin-bottom:14px;">
+            <span class="section-title">Platform összeköttetések</span>
+            <a href="#" class="section-link">Kezelés →</a>
+          </div>
+          <div class="platform-grid">
+
+            <div class="platform-card">
+              <div class="platform-card-header" style="background: var(--gm-grad-teal);">
+                <div class="platform-icon-box">
+                  <i data-lucide="g" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <div class="platform-card-title">Google</div>
+                  <div class="platform-card-subtitle">Business Profile</div>
+                </div>
+              </div>
+              <div class="platform-card-body">
+                <div class="platform-score-row">
+                  <span class="platform-score">4.8</span>
+                  <span class="platform-score-max">/ 5</span>
+                </div>
+                <div class="stars">
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                </div>
+                <div class="platform-meta">
+                  <span class="status-dot"></span>
+                  1 248 vélemény · aktív
+                </div>
+              </div>
+            </div>
+
+            <div class="platform-card">
+              <div class="platform-card-header" style="background: var(--gm-grad-primary);">
+                <div class="platform-icon-box">
+                  <i data-lucide="facebook" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <div class="platform-card-title">Meta</div>
+                  <div class="platform-card-subtitle">Facebook Reviews</div>
+                </div>
+              </div>
+              <div class="platform-card-body">
+                <div class="platform-score-row">
+                  <span class="platform-score">4.6</span>
+                  <span class="platform-score-max">/ 5</span>
+                </div>
+                <div class="stars">
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                </div>
+                <div class="platform-meta">
+                  <span class="status-dot"></span>
+                  342 vélemény · aktív
+                </div>
+              </div>
+            </div>
+
+            <div class="platform-card">
+              <div class="platform-card-header" style="background: var(--gm-grad-orange);">
+                <div class="platform-icon-box">
+                  <i data-lucide="bed-double" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <div class="platform-card-title">Booking.com</div>
+                  <div class="platform-card-subtitle">Score only</div>
+                </div>
+              </div>
+              <div class="platform-card-body">
+                <div class="platform-score-row">
+                  <span class="platform-score">9.1</span>
+                  <span class="platform-score-max">/ 10</span>
+                </div>
+                <div style="font-size:13px;font-weight:600;color:var(--gm-warning);">Kivételes</div>
+                <div class="platform-meta">
+                  <span class="status-dot"></span>
+                  Heti frissítés · aktív
+                </div>
+              </div>
+            </div>
+
+            <div class="platform-card">
+              <div class="platform-card-header" style="background: var(--gm-grad-green);">
+                <div class="platform-icon-box">
+                  <i data-lucide="map-pin" style="width:18px;height:18px;"></i>
+                </div>
+                <div>
+                  <div class="platform-card-title">TripAdvisor</div>
+                  <div class="platform-card-subtitle">Score only</div>
+                </div>
+              </div>
+              <div class="platform-card-body">
+                <div class="platform-score-row">
+                  <span class="platform-score">4.4</span>
+                  <span class="platform-score-max">/ 5</span>
+                </div>
+                <div style="font-size:13px;font-weight:600;color:var(--gm-success);">Nagyon jó</div>
+                <div class="platform-meta">
+                  <span class="status-dot pending"></span>
+                  Utolsó frissítés: 3 napja
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Hotels -->
+        <div>
+          <div class="section-header" style="margin-bottom:14px;">
+            <span class="section-title">Szállodák</span>
+            <a href="#" class="section-link">Összes →</a>
+          </div>
+          <div class="hotel-grid">
+
+            <div class="hotel-card">
+              <div class="hotel-card-top">
+                <div class="hotel-avatar" style="background: var(--gm-grad-teal);">HG</div>
+                <div>
+                  <div class="hotel-name">Hotel Gellért</div>
+                  <div class="hotel-location">
+                    <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+                    Budapest, HU
+                  </div>
+                </div>
+              </div>
+              <div class="hotel-divider"></div>
+              <div class="hotel-scores">
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-teal);">G</div>
+                  <div class="hotel-score-val">4.8</div>
+                  <div class="hotel-score-trend">▲ 0.1</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-primary);">F</div>
+                  <div class="hotel-score-val">4.6</div>
+                  <div class="hotel-score-trend">▲ 0.2</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-orange);">B</div>
+                  <div class="hotel-score-val">9.1</div>
+                  <div class="hotel-score-trend">→ 0</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-green);">T</div>
+                  <div class="hotel-score-val">4.4</div>
+                  <div class="hotel-score-trend" style="color:var(--gm-danger);">▼ 0.1</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hotel-card" style="background: var(--gm-tint-purple); border-color: rgba(139,92,246,0.12);">
+              <div class="hotel-card-top">
+                <div class="hotel-avatar" style="background: var(--gm-grad-purple);">CC</div>
+                <div>
+                  <div class="hotel-name">Corinthia Corvinus</div>
+                  <div class="hotel-location">
+                    <i data-lucide="map-pin" style="width:11px;height:11px;"></i>
+                    Budapest, HU
+                  </div>
+                </div>
+              </div>
+              <div class="hotel-divider" style="background: rgba(139,92,246,0.12);"></div>
+              <div class="hotel-scores">
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-teal);">G</div>
+                  <div class="hotel-score-val">4.5</div>
+                  <div class="hotel-score-trend">→ 0</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-primary);">F</div>
+                  <div class="hotel-score-val">4.3</div>
+                  <div class="hotel-score-trend" style="color:var(--gm-danger);">▼ 0.1</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-orange);">B</div>
+                  <div class="hotel-score-val">8.7</div>
+                  <div class="hotel-score-trend">▲ 0.3</div>
+                </div>
+                <div class="hotel-score-item">
+                  <div class="hotel-score-logo" style="background: var(--gm-grad-green);">T</div>
+                  <div class="hotel-score-val">4.2</div>
+                  <div class="hotel-score-trend">→ 0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hotel-card" style="background: var(--gm-tint-orange); border-color: rgba(249,115,22,0.12); border-style: dashed; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:140px; cursor:pointer;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(249,115,22,0.1);border:1.5px dashed rgba(249,115,22,0.4);display:flex;align-items:center;justify-content:center;color:#f97316;">
+                <i data-lucide="plus" style="width:20px;height:20px;"></i>
+              </div>
+              <div style="font-size:14px;font-weight:600;color:#f97316;">Új szálloda</div>
+              <div style="font-size:12px;color:var(--gm-text-muted);text-align:center;">Adj hozzá egy új szállodát a rendszerhez</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Recent reviews -->
+        <div>
+          <div class="section-header" style="margin-bottom:14px;">
+            <span class="section-title">Legutóbbi vélemények</span>
+            <a href="#" class="section-link">Összes →</a>
+          </div>
+          <div class="reviews-list">
+
+            <div class="review-row">
+              <div class="review-platform-badge" style="background: var(--gm-grad-teal);">G</div>
+              <div style="flex:1;min-width:0;">
+                <div class="review-stars">
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                </div>
+                <div class="review-text">"Fantasztikus szálloda, a személyzet rendkívül segítőkész volt. A szoba tiszta, tágas és gyönyörű kilátással rendelkezett. Mindenképpen visszatérünk!"</div>
+                <div class="review-meta">
+                  <span style="font-size:12px;color:var(--gm-text-secondary);">K. Mária</span>
+                  <span class="chip chip-couple"><i data-lucide="heart" style="width:10px;height:10px;"></i>Páros</span>
+                  <span class="chip chip-positive">Pozitív</span>
+                  <span class="review-date">2026-04-28</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-row">
+              <div class="review-platform-badge" style="background: var(--gm-grad-primary);">F</div>
+              <div style="flex:1;min-width:0;">
+                <div class="review-stars">
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;color:var(--gm-rating-empty);"></i>
+                </div>
+                <div class="review-text">"Jó elhelyezkedés, kényelmes ágyak. A reggeli lehetett volna gazdagabb, de összességében elégedett voltam a tartózkodással."</div>
+                <div class="review-meta">
+                  <span style="font-size:12px;color:var(--gm-text-secondary);">T. Péter</span>
+                  <span class="chip chip-business"><i data-lucide="briefcase" style="width:10px;height:10px;"></i>Üzleti</span>
+                  <span class="chip chip-neutral">Semleges</span>
+                  <span class="review-date">2026-04-26</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-row">
+              <div class="review-platform-badge" style="background: var(--gm-grad-teal);">G</div>
+              <div style="flex:1;min-width:0;">
+                <div class="review-stars">
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                  <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
+                </div>
+                <div class="review-text">"A gyerekek imádták a medencét! A személyzet nagyon figyelmes volt a kis vendégekre is. Biztosan jövünk jövőre is."</div>
+                <div class="review-meta">
+                  <span style="font-size:12px;color:var(--gm-text-secondary);">N. László</span>
+                  <span class="chip chip-family"><i data-lucide="users" style="width:10px;height:10px;"></i>Családos</span>
+                  <span class="chip chip-positive">Pozitív</span>
+                  <span class="review-date">2026-04-24</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </main>
+  </div><!-- /dashboard -->
+
+  <script>
+    lucide.createIcons();
+
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.switcher button').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      document.querySelectorAll('.switcher button').forEach(b => {
+        if (b.textContent.toLowerCase().includes(name === 'login' ? 'login' : 'dashboard')) {
+          b.classList.add('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
