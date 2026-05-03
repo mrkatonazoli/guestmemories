@@ -1,0 +1,25 @@
+{
+  "name": "guestmemories",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GuestMemories — multi-tenant hotel review aggregator",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:link": "supabase link --project-ref $SUPABASE_PROJECT_REF",
+    "db:diff": "supabase db diff",
+    "db:push": "supabase db push",
+    "db:types": "supabase gen types typescript --linked > packages/db-types/src/database.ts"
+  },
+  "devDependencies": {
+    "supabase": "^1.200.3",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
