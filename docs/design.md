@@ -58,11 +58,14 @@ Ez egy hotel-kezelő rendszer, ahol hotelek csatlakoztatják a Google és Meta f
 
 | Igen | Nem |
 |---|---|
-| Tiszta, légies | Zsúfolt, hadonászó |
+| Meleg, légies, modern SaaS | Zsúfolt, hadonászó |
+| Gradient akcentusok, pasztell tónusok | Flat szürke "enterprise" ridegség |
 | Magabiztos, közvetlen | Pöffeszkedő, szlengel |
 | Precíz, adathű | Túl-dramatizált, clickbait |
-| Meleg, emberi | Rideg, robotalapú |
+| Emberi, bizalomkeltő | Rideg, robotalapú |
 | Progresszív, gyors | Lassú, bloated |
+
+**Vizuális referencia**: a Premio Travel Data Hub UI (Premio, 2026) stílusa az irányadó — gradient section headerek, tintált kártyák, iOS-stílusú ikon-konténerek, pasztell akcentusok.
 
 ---
 
@@ -112,6 +115,24 @@ A teljes token-rendszer CSS custom properties-ként él, így a white-label widg
   /* Értékelés */
   --gm-rating:           #f59e0b;  /* csillag szín */
   --gm-rating-empty:     #e2e8f0;
+
+  /* Gradientek — section headerek, hero blokkok, ikon-konténerek */
+  --gm-grad-primary:     linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);  /* indigo→kék */
+  --gm-grad-teal:        linear-gradient(135deg, #06b6d4 0%, #2dd4bf 100%);  /* cyan→teal */
+  --gm-grad-orange:      linear-gradient(135deg, #f97316 0%, #fb923c 100%);  /* narancs */
+  --gm-grad-pink:        linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);  /* pink→rose */
+  --gm-grad-green:       linear-gradient(135deg, #10b981 0%, #34d399 100%);  /* emerald */
+  --gm-grad-purple:      linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);  /* violet */
+  --gm-grad-hero:        linear-gradient(135deg, #667eea 0%, #764ba2 100%);  /* login/hero */
+  --gm-grad-page-bg:     linear-gradient(160deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%); /* oldal bg */
+
+  /* Tintált kártya-háttér (szekció-szín halvány árnyalata) */
+  --gm-tint-teal:        rgba(6, 182, 212, 0.06);
+  --gm-tint-orange:      rgba(249, 115, 22, 0.06);
+  --gm-tint-purple:      rgba(139, 92, 246, 0.06);
+  --gm-tint-green:       rgba(16, 185, 129, 0.06);
+  --gm-tint-pink:        rgba(236, 72, 153, 0.06);
+  --gm-tint-blue:        rgba(59, 130, 246, 0.06);
 
   /* Platform-brandek */
   --gm-google:           #4285f4;
@@ -347,6 +368,136 @@ Az admin UI **12-oszlopos grid**-et használ (`gap-6`):
 
 ---
 
+## 5b. Gradient & vizuális identitás
+
+### Gradient section header
+
+A fő tartalmi szekciók (platform-kártyák, fázis-blokkok, feature-kártyák) **gradient fejléccel** rendelkeznek. A gradient a szekció "karakterét" fejezi ki — nem véletlenszerű, hanem következetes hozzárendelés:
+
+| Szekció / platform | Gradient token | Szín |
+|---|---|---|
+| Google integráció | `--gm-grad-teal` | cyan→teal |
+| Meta integráció | `--gm-grad-primary` | indigo→kék |
+| Booking.com | `--gm-grad-orange` | narancs |
+| TripAdvisor | `--gm-grad-green` | emerald |
+| Widgetek | `--gm-grad-purple` | violet |
+| Statisztikák | `--gm-grad-pink` | pink |
+| Beállítások | `--gm-grad-primary` | indigo→kék |
+| Login / Hero | `--gm-grad-hero` | #667eea→#764ba2 |
+
+**Gradient header anatómiája**:
+```
+border-radius: var(--gm-radius-lg) var(--gm-radius-lg) 0 0
+padding: 20px 24px
+background: [gradient token]
+color: white
+```
+Benne: **ikon-konténer** (balra) + **cím + alcím** + opcionális **badge/chip** (jobbra).
+
+---
+
+### iOS-stílusú ikon-konténer
+
+Az ikonok nem csupaszon jelennek meg — lekerekített négyzet konténerben ülnek, a szekció gradiensjével:
+
+```
+width: 44px / height: 44px
+border-radius: 12px
+background: [szekció gradient]  ← vagy fehér 20% opacity, ha dark bg-n van
+display: flex / align-items: center / justify-content: center
+icon: 22px, color: white
+```
+
+Nagy méret (hero / feature kártya):
+```
+width: 56px / height: 56px
+border-radius: 14px
+icon: 28px
+```
+
+Kis méret (list item, numbered badge mellett):
+```
+width: 32px / height: 32px
+border-radius: 8px
+icon: 16px
+```
+
+---
+
+### Numbered badge
+
+Számozott lépések jelölésére (feature lista, form lépések, feladat-sorok):
+
+```
+width: 28px / height: 28px
+border-radius: 50%
+background: transparent
+border: 1.5px solid [szekció akcentusszín]
+color: [szekció akcentusszín]
+font: 13px / 600
+display: flex / align-items: center / justify-content: center
+```
+
+Ha a szekció header gradient-en belül van → fehér változat:
+```
+background: rgba(255,255,255,0.2)
+border: 1.5px solid rgba(255,255,255,0.5)
+color: white
+```
+
+---
+
+### Tintált kártya
+
+A szekcióhoz tartozó feature/feladat-kártyák a szekció akcentusszínének halvány tintájával rendelkeznek:
+
+```css
+.card-tinted-teal {
+  background: var(--gm-tint-teal);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+}
+.card-tinted-orange {
+  background: var(--gm-tint-orange);
+  border: 1px solid rgba(249, 115, 22, 0.15);
+}
+/* ...stb. */
+```
+
+A tintált kártya tartalma **nem gradient** — csak a háttér-szín halvány, a szöveg normál `--gm-text`.
+
+---
+
+### Oldalszintű háttér
+
+Az admin oldalak háttere nem sima fehér/szürke — nagyon halvány, multi-stop gradient:
+
+```css
+body {
+  background: var(--gm-grad-page-bg);
+  /* = linear-gradient(160deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%) */
+  min-height: 100vh;
+}
+```
+
+Ez szinte észrevehetetlen, de "meleg" és "élő" érzetet ad a fehér felületek mögött.
+
+---
+
+### Összegző section (dark card)
+
+Árazás, összefoglalás, fontos kiemelés esetén **sötét kártya** használandó:
+
+```
+background: #1e293b  (slate-800)
+border-radius: var(--gm-radius-xl)
+color: white
+padding: 32px
+```
+
+Benne a főszám (ár, KPI) `display-md` méretben, fehéren. Alcím `--gm-text-muted` (halvány fehér).
+
+---
+
 ## 6. Ikonok
 
 **Csomag**: `lucide-react` — konzisztens, stroke-based, méretarányos, tree-shaking friendly.
@@ -477,6 +628,7 @@ font: 14px / 400
 
 ### 8.3 Kártya
 
+**Alap kártya**:
 ```
 background: var(--gm-surface)
 border: 1px solid var(--gm-border)
@@ -486,15 +638,34 @@ padding: 24px (desktop) / 16px (mobile)
 
 hover (ha klikk-able):
   box-shadow: var(--gm-shadow-md)
-  transform: translateY(-1px)
+  transform: translateY(-2px)
   transition: 150ms ease-out
 ```
 
-**Hotel kártya felépítése**:
+**Tintált kártya** (szekció-kontextusban):
+```
+background: var(--gm-tint-[szín])
+border: 1px solid [szín] 15% opacity
+border-radius: var(--gm-radius-md)
+padding: 16px
+```
+
+**Gradient-fejléces kártya** (platform integráció, feature-szekció):
+```
+┌──────────────────────────────────┐  ← gradient bg, fehér szöveg
+│ [ikon-konténer]  Cím             │    border-radius: lg lg 0 0
+│                  Alcím           │    padding: 20px 24px
+└──────────────────────────────────┘
+┌──────────────────────────────────┐  ← fehér/surface bg
+│  tartalom, task-lista stb.       │    border-radius: 0 0 lg lg
+└──────────────────────────────────┘
+```
+
+**Hotel kártya felépítése** (tintált, kattintható):
 ```
 ┌────────────────────────────────────┐
-│ [logó/avatar]  Név                 │
-│                Város, Ország       │
+│ [ikon-konténer]  Név               │  ← --gm-tint-blue bg
+│  (hotel avatar)  Város, Ország     │    hover: shadow-md + -2px
 │                                    │
 │ ─────────────────────────────────  │
 │ [G] 4.7  [F] 4.5  [B] 8.9  [T]4.4 │
@@ -635,18 +806,26 @@ Auto-close: 4s (success/info), 8s (warning), kézi (error)
 
 ### 8.11 Platform connection kártya
 
+Gradient-fejléces kártya, a platform akcentusszínével:
+
 ```
-┌──────────────────────────────────────────┐
-│ [Google logo]  Google Business Profile   │
-│                                          │
+┌──────────────────────────────────────────┐  ← gradient header (platform színe)
+│ [ikon-konténer]  Google Business Profile │    fehér szöveg
+│                  Értékelések szinkronja  │
+└──────────────────────────────────────────┘
+┌──────────────────────────────────────────┐  ← fehér tartalom-rész
 │ ● Csatlakoztatva  —  Hotel Gellért       │
-│ Utolsó szinkron: 2 perce                 │
+│ Utolsó szinkron: 2 perce  •  248 review  │
 │                                          │
 │ [Szinkronizálás]        [Leválasztás]    │
 └──────────────────────────────────────────┘
 ```
 
-Állapotok: Nincs csatlakoztatva / Folyamatban / Csatlakoztatva / Hiba (részletes hiba expander)
+Állapotok:
+- **Nincs csatlakoztatva**: fejléc szürke gradient, "Csatlakoztatás" primary gomb
+- **Folyamatban**: fejléc animált shimmer, spinner
+- **Csatlakoztatva**: platform gradient, zöld "● Aktív" badge
+- **Hiba**: narancs/piros gradient, részletes hiba expander lenyíló
 
 ### 8.12 Táblázat
 
@@ -821,15 +1000,21 @@ Ha a widget betölt és kisebb, a min-height eltűnik. Ha nem tölt be, a div ü
 ### 10.1 Bejelentkezési oldal
 
 ```
-Középre igazított kártya (max-w: 400px)
-[GuestMemories logó]
-[heading: "Üdvözlünk"]
-[email input]
-[jelszó input + show/hide toggle]
-[Bejelentkezés gomb]
-──────
-[Elfelejtett jelszó link]
+Teljes viewport gradient háttér (--gm-grad-hero)
+
+Középre igazított fehér kártya (max-w: 420px, border-radius: xl, shadow: xl)
+  [GuestMemories logó — fehér/átlátszó verzió a gradient bg-n FELETT]
+  ───── kártya belseje ─────
+  [heading: "Üdvözlünk vissza"]
+  [subheading: "Jelentkezz be a GuestMemories fiókodba"]
+  [email input]
+  [jelszó input + show/hide toggle]
+  [Bejelentkezés gomb — primary, full width]
+  ──────
+  [Elfelejtett jelszó link]
 ```
+
+A login oldal az egyetlen hely, ahol **teljes oldal gradient** van — ez erős első benyomás, és megkülönbözteti a "kapubejárót" a dashboard feliletétől.
 
 **Állapotok**:
 - Hibás adat: piros border az input-on, toast ("Hibás email vagy jelszó")
@@ -1093,3 +1278,7 @@ A befogadó oldalon lévő snippet-kód hallgatja és átméretezi az iframe-t.
 | 2026-05-03 | Skeleton-only loading (spinner tiltott oldalszinten) | Felhasználói teszt: skeleton kevesebb szorongást okoz |
 | 2026-05-03 | Widget cache 5 perc + stale-while-revalidate | Sebesség vs. freshness kompromisszum |
 | 2026-05-03 | Destruktív confirm gomb 1mp disabled | Meggondolatlankattintás-prevenci, UX best practice |
+| 2026-05-03 | Gradient section headerek + tintált kártyák | Vizuális referencia: Premio Travel Data Hub UI — melegebb, modernebb SaaS feeling |
+| 2026-05-03 | iOS-stílusú ikon-konténer (lekerekített négyzet, gradient fill) | Azonos referencia; következetes ikonmegjelenítés a feature-lista és platform-kártyákon |
+| 2026-05-03 | Oldal háttér: halvány multi-stop gradient (nem flat szürke) | "Élő" érzet minimális vizuális zajjal |
+| 2026-05-03 | Login oldal: teljes viewport gradient | Erős első benyomás, megkülönbözteti a "kaput" a dashboardtól |
